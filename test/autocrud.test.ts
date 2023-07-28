@@ -45,7 +45,7 @@ describe("Auto CRUD", () => {
       .post("/")
       .send(testIncompleteModelPayload);
     expect(response.statusCode).toBe(400);
-    expect(response.body.missingFields).toContain("name");
+    expect(response.body.fields).toContain("name");
   });
   it("Should fail to update a model if the payload is missing a mandatory field", async () => {
     const createdModelResponse = await request(app)
@@ -55,15 +55,15 @@ describe("Auto CRUD", () => {
       .put(`/${createdModelResponse.body.id}`)
       .send(testIncompleteModelPayload);
     expect(response.statusCode).toBe(400);
-    expect(response.body.missingFields).toContain("name");
+    expect(response.body.fields).toContain("name");
     await request(app).delete(`/${createdModelResponse.body.id}`);
   });
   it("Should fail to create a model if the payload has an incorrectly typed field", async () => {
     const response = await request(app)
       .post("/")
-      .send(testIncompleteModelPayload);
+      .send(testIncorrectFieldTypeModelPayload);
     expect(response.statusCode).toBe(400);
-    expect(response.body.incorrectFields).toContain("description");
+    expect(response.body.fields).toContain("description");
   });
   // it("Should list ")
 });
