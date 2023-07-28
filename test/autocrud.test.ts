@@ -1,6 +1,6 @@
 import { sequelize, TestModel } from "./TestModel";
 import request from "supertest";
-import { autocrud } from "../src/autocrud";
+import { autocrud } from "../lib/autocrud";
 import express from "express";
 
 const app = express();
@@ -58,6 +58,13 @@ describe("Auto CRUD", () => {
     expect(response.body.missingFields).toContain("name");
     await request(app).delete(`/${createdModelResponse.body.id}`);
   });
+  it("Should fail to create a model if the payload has an incorrectly typed field", async () => {
+    const response = await request(app)
+      .post("/")
+      .send(testIncompleteModelPayload);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.incorrectFields).toContain("description");
+  });
   // it("Should list ")
 });
 
@@ -68,6 +75,11 @@ const testModelPayload = {
 
 const testIncompleteModelPayload = {
   description: "This model payload is incomplete!",
+};
+
+const testIncorrectFieldTypeModelPayload = {
+  name: "Inorrect field",
+  description: false,
 };
 
 const testModelUpdated = {
